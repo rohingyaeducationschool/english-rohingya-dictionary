@@ -50,90 +50,18 @@ public class MainActivity extends Activity {
         );
 
         loadDictionary();
-        createInterface();
 
-        textToSpeech = new TextToSpeech(
-                this,
-                status -> {
-                    if (status == TextToSpeech.SUCCESS) {
-                        textToSpeech.setLanguage(Locale.ENGLISH);
-                    }
-                }
-        );
-    }
+        setContentView(R.layout.activity_main);
 
-    private void createInterface() {
+        searchInput = findViewById(R.id.searchInput);
+        resultsLayout = findViewById(R.id.resultsLayout);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(16), dp(12), dp(16), dp(12));
-        root.setBackgroundColor(WHITE);
+        Button addButton = findViewById(R.id.addButton);
+        TextView homeButton = findViewById(R.id.homeButton);
+        TextView favoritesButton = findViewById(R.id.favoritesButton);
+        TextView historyButton = findViewById(R.id.historyButton);
 
-        TextView title = new TextView(this);
-        title.setText("Rohingya Dictionary");
-        title.setTextSize(25);
-        title.setTypeface(null, Typeface.BOLD);
-        title.setTextColor(GREEN);
-        title.setGravity(Gravity.CENTER);
-        title.setPadding(0, dp(12), 0, dp(18));
-
-        root.addView(title);
-
-        searchInput = new EditText(this);
-        searchInput.setSingleLine(true);
-        searchInput.setTextSize(17);
-        searchInput.setHint("Search English or Rohingya...");
-        searchInput.setPadding(
-                dp(12), dp(10), dp(12), dp(10)
-        );
-        searchInput.setBackgroundColor(
-                Color.rgb(240, 245, 244)
-        );
-        searchInput.setImeOptions(
-                EditorInfo.IME_ACTION_SEARCH
-        );
-
-        root.addView(
-                searchInput,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        dp(54)
-                )
-        );
-
-        Button addButton = new Button(this);
-        addButton.setText("+ Add New Word");
-        addButton.setTextColor(WHITE);
-        addButton.setBackgroundTintList(
-                android.content.res.ColorStateList.valueOf(GREEN)
-        );
-
-        root.addView(
-                addButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        dp(50)
-                )
-        );
-
-        ScrollView scrollView = new ScrollView(this);
-
-        resultsLayout = new LinearLayout(this);
-        resultsLayout.setOrientation(LinearLayout.VERTICAL);
-        resultsLayout.setPadding(0, dp(12), 0, dp(12));
-
-        scrollView.addView(resultsLayout);
-
-        root.addView(
-                scrollView,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        0,
-                        1
-                )
-        );
-
-        setContentView(root);
+        searchInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -162,7 +90,40 @@ public class MainActivity extends Activity {
                 }
         );
 
-        addButton.setOnClickListener(v -> showAddWordDialog());
+        addButton.setOnClickListener(
+                v -> showAddWordDialog()
+        );
+
+        homeButton.setOnClickListener(v -> {
+            searchInput.setText("");
+            hideKeyboard();
+        });
+
+        favoritesButton.setOnClickListener(v ->
+                Toast.makeText(
+                        this,
+                        "Favorites feature will be added next.",
+                        Toast.LENGTH_SHORT
+                ).show()
+        );
+
+        historyButton.setOnClickListener(v ->
+                Toast.makeText(
+                        this,
+                        "Search history feature will be added next.",
+                        Toast.LENGTH_SHORT
+                ).show()
+        );
+
+        textToSpeech = new TextToSpeech(
+                this,
+                status -> {
+                    if (status == TextToSpeech.SUCCESS
+                            && textToSpeech != null) {
+                        textToSpeech.setLanguage(Locale.ENGLISH);
+                    }
+                }
+        );
 
         searchWords("");
     }
@@ -195,12 +156,15 @@ public class MainActivity extends Activity {
         }
 
         if (found == 0) {
+
             TextView empty = new TextView(this);
+
             empty.setText(
                     search.isEmpty()
                     ? "Your dictionary is ready.\nTap + Add New Word to begin."
                     : "No matching word found.\nTry another word or add it to your dictionary."
             );
+
             empty.setTextSize(16);
             empty.setTextColor(Color.DKGRAY);
             empty.setGravity(Gravity.CENTER);
@@ -246,7 +210,7 @@ public class MainActivity extends Activity {
         card.addView(meaningText);
 
         Button speakButton = new Button(this);
-        speakButton.setText("🔊 Pronounce English");
+        speakButton.setText("Pronounce English");
 
         speakButton.setOnClickListener(v -> {
             if (textToSpeech != null) {
@@ -333,7 +297,11 @@ public class MainActivity extends Activity {
     }
 
     private void loadDictionary() {
-        String saved = preferences.getString("dictionary", "[]");
+
+        String saved = preferences.getString(
+                "dictionary",
+                "[]"
+        );
 
         try {
             dictionary = new JSONArray(saved);
@@ -343,21 +311,24 @@ public class MainActivity extends Activity {
     }
 
     private void saveDictionary() {
+
         preferences.edit()
                 .putString("dictionary", dictionary.toString())
                 .apply();
     }
 
     private void hideKeyboard() {
+
         try {
             InputMethodManager manager =
                     (InputMethodManager) getSystemService(
                             Context.INPUT_METHOD_SERVICE
                     );
 
-            if (manager != null) {
+            if (manager != null && searchInput != null) {
                 manager.hideSoftInputFromWindow(
-                        searchInput.getWindowToken(), 0
+                        searchInput.getWindowToken(),
+                        0
                 );
             }
         } catch (Exception ignored) {
@@ -373,10 +344,12 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
+
         super.onDestroy();
     }
 }
