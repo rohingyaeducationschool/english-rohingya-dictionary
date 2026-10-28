@@ -1,0 +1,196 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rohingya Dictionary</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f0f7f5;
+      color: #222;
+    }
+
+    header {
+      text-align: center;
+      background: #075e54;
+      color: white;
+      padding: 25px 10px;
+      border-radius: 14px;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 25px auto;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+
+    input {
+      border: 1px solid #bbb;
+      background: white;
+    }
+
+    button {
+      border: none;
+      background: #128c7e;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      border-left: 5px solid #128c7e;
+    }
+
+    .rohingya {
+      direction: rtl;
+      unicode-bidi: plaintext;
+      font-size: 25px;
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .message {
+      color: #666;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 35px;
+      color: #666;
+      font-size: 13px;
+    }
+  </style></head><body>  <header>
+    <h1>📚 Rohingya Dictionary</h1>
+    <p>English ↔ Rohingya</p>
+    <p>Learn words. Preserve our language.</p>
+  </header>  <main class="container"><input
+  type="search"
+  id="searchWord"
+  placeholder="Search English or Rohingya..."
+  autocomplete="off"
+>
+
+<button onclick="searchDictionary()">🔍 Search Word</button>
+
+<div id="result" class="result">
+  <p class="message">Search a word to see its meaning.</p>
+</div>
+
+  </main>  <footer>
+    © 2026 Rohingya Dictionary
+  </footer>  <script>
+    const dictionary = [
+      {
+        english: "Hello",
+        rohingya: "আসসালামু আলাইকুম",
+        bangla: "হ্যালো / সালাম",
+        pronunciation: "হেলো"
+      },
+      {
+        english: "Water",
+        rohingya: "পানি",
+        bangla: "পানি",
+        pronunciation: "ওয়াটার"
+      },
+      {
+        english: "Book",
+        rohingya: "কিতাপ",
+        bangla: "বই",
+        pronunciation: "বুক"
+      },
+      {
+        english: "Mother",
+        rohingya: "আম্মা",
+        bangla: "মা",
+        pronunciation: "মাদার"
+      },
+      {
+        english: "Father",
+        rohingya: "আব্বা",
+        bangla: "বাবা",
+        pronunciation: "ফাদার"
+      }
+    ];
+
+    function searchDictionary() {
+      const query = document
+        .getElementById("searchWord")
+        .value.trim()
+        .toLowerCase();
+
+      const result = document.getElementById("result");
+
+      if (!query) {
+        result.innerHTML =
+          '<p class="message">Please enter a word.</p>';
+        return;
+      }
+
+      const matches = dictionary.filter(word =>
+        word.english.toLowerCase().includes(query) ||
+        word.rohingya.toLowerCase().includes(query) ||
+        word.bangla.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        result.innerHTML =
+          '<p class="message">Word not found. Try another word.</p>';
+        return;
+      }
+
+      result.innerHTML = matches.map(word => `
+        <h2>${escapeHTML(word.english)}</h2>
+        <p><strong>Rohingya:</strong></p>
+        <div class="rohingya" dir="rtl">
+          ${escapeHTML(word.rohingya)}
+        </div>
+        <p><strong>Bangla Meaning:</strong>
+          ${escapeHTML(word.bangla)}
+        </p>
+        <p><strong>Pronunciation:</strong>
+          ${escapeHTML(word.pronunciation)}
+        </p>
+        <hr>
+      `).join("");
+    }
+
+    function escapeHTML(text) {
+      return text.replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    document
+      .getElementById("searchWord")
+      .addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          searchDictionary();
+        }
+      });
+  </script></body>
+</html>
